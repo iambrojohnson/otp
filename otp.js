@@ -1,3 +1,5 @@
+
+ 
 var otps = document.querySelectorAll(".otpBox")
    
    for(const inputs of otps) {
@@ -5,15 +7,34 @@ var otps = document.querySelectorAll(".otpBox")
       inputs.addEventListener("input", input)
       inputs.addEventListener("paste" , paste)
    }
+   document.addEventListener("keyup", deleteOtp)
+   
+   function deleteOtp(e) {
+     var keypress = e.keyCode;
+     const  keys = [8, /* Add more keycodes here */]
+     if( keys.includes( keypress ) ) {
+       let target = e.target,
+           prev = target.previousElementSibling;
+       if( target.value == "" ) {
+         prev.value = ""
+         prev.focus()
+       }else {
+         target.focus()
+       }
+     }
+   }
+   
    
    function paste(e) {
-      e.preventDefault()
-     var  otp = e.clipboardData.getData("text/plain")
+     
+     var  otp = e.clipboardData.getData("text/plain").trim()
+      
      if(otp.length == otps.length) {
        for( var i in otp ) {
          otps[i].value = otp[i]
        }
      }
+      e.preventDefault()
    }
    
    function input(e) {
@@ -34,17 +55,24 @@ var otps = document.querySelectorAll(".otpBox")
         var f = this.value.slice(0, 1),
             l = this.value.slice(1,2)
         this.value = f
-        if(next && next.value == "") {
+        if((next && next.value == "")
+            && this.value !== ""
+           ) {
           next.focus()
           next.value = l
         }
-     }else {
-         if( next ) {
-          next.focus()
-       }
-     }
-     
-     
+     } 
    
    }
   
+   function getOTPValue(callback) {
+       var otp = "" 
+       for(var o of otps){
+          otp += o.value 
+       } 
+       if( callback ) callback( otp );
+       else return otp;
+   }
+   
+   
+   
